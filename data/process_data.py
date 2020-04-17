@@ -4,12 +4,31 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    '''
+    Load the data 
+
+    Inputs:
+        csv messages file 
+        csv catogories file
+
+    Output:
+        merged dataframe
+    '''
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df = pd.merge(messages, categories, how='left', on='id')
     return df
 
 def clean_data(df):
+    '''
+    Clean the dataframe
+
+    Inputs:
+        dataframe
+    
+    Output:
+        Cleaned dataframe
+    '''
     #split the category column
     categories = df.categories.str.split(';', expand=True)
 
@@ -39,6 +58,13 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    '''
+    Save the dataframe in a SQLite
+
+    Inputs:
+        dataframe
+        database name
+    '''
     engine = create_engine('sqlite:///DisasterDatabase.db')
     df.to_sql(database_filename, engine, index=False, if_exists='replace')
 
