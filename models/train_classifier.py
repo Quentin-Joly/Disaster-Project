@@ -27,6 +27,16 @@ from sklearn.tree import DecisionTreeClassifier
 import pickle
 
 def load_data(database_filepath):
+    '''
+    Load the data from the SQLite database
+
+    Inputs:
+        database name
+    Output:
+        messages as X
+        categories as Y
+        categories name
+    '''
     engine = create_engine('sqlite:///DisasterDatabase.db')
     df = pd.read_sql_table(database_filepath, engine)
     X = df['message']
@@ -36,6 +46,15 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    '''
+    Tokenize text
+
+    Inputs:
+        text
+    
+    Output:
+    tokenized text
+    '''
     lemmatizer = WordNetLemmatizer()
     stop_words = stopwords.words('english')
     #text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
@@ -45,6 +64,12 @@ def tokenize(text):
 
 
 def build_model():
+    '''
+    Build the model with tuned parameters
+
+    Output:
+        Grid Search object with tuned parameters
+    '''
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -62,6 +87,18 @@ def build_model():
     return cv
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    Evaluate the model performance
+    
+    Input:
+        model
+        X_test
+        Y_test
+        category names
+    
+    Output:
+        print the F1 score, recall, precision, accuracy, best parameters
+    '''
     preds = model.predict(X_test)
     print(classification_report(Y_test, preds, target_names=category_names))
     print('Accuracy : ', (preds == Y_test).mean())
@@ -69,6 +106,13 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    '''
+    Save the data model as a pickle file
+
+    Input:
+        model
+        name of the file
+    '''
     pickle.dump(model,open(model_filepath,'wb'))
 
 
